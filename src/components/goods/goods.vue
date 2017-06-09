@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" v-el:menu-wrapper>
       <ul>
         <!--current: 代表当前的-->
         <li class="menu-item" v-for="good in goods">
@@ -10,7 +10,7 @@
         </li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" v-el:foods-wrapper>
       <ul>
         <li class="food-list food-list-hook" v-for="good in goods">
           <h1 class="title">{{good.name}}</h1>
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+  import BScroll from 'better-scroll'
   export default {
     data () {
       return {
@@ -58,8 +59,28 @@
           var result = response.body
           if(result.code===0) {
             this.goods = result.data
+
+            // 将回调延迟到下次 DOM 更新循环之后执行
+            this.$nextTick(() => {
+              this._initScroll()
+            })
+
+            /*setTimeout(() => {
+              this._initScroll()
+            }, 200)*/
           }
         })
+    },
+
+    methods: {
+      // 初始化创建Scroller对象, 形成滚动条
+      _initScroll () {
+        // 左侧菜单的scroll
+        var menuScroll = new BScroll(this.$els.menuWrapper, {})
+        // 右侧goods列表的scroll
+        var foodsScroll = new BScroll(this.$els.foodsWrapper, {})
+
+      }
     }
   }
 </script>
