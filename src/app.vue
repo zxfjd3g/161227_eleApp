@@ -35,6 +35,7 @@
           const result = response.body
           if(result.code===0) {
             this.seller = result.data
+            this.seller.score = 3.6
           }
         })
       //发送ajax请求(express提供的接口)
