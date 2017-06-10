@@ -16,7 +16,7 @@
         <li class="food-list food-list-hook" v-for="good in goods">
           <h1 class="title">{{good.name}}</h1>
           <ul>
-            <li class="food-item border-1px" v-for="food in good.foods">
+            <li class="food-item border-1px" v-for="food in good.foods" @click="showFood(food)">
               <div class="icon">
                 <img width="57" height="57" :src="food.icon">
               </div>
@@ -46,12 +46,15 @@
               :update-food-count="updateFoodCount"
               @clear="clearCart"></shopcart>
   </div>
+
+  <food :food="selectedFood" :update-food-count="updateFoodCount" v-ref:food></food>
 </template>
 
 <script>
   import Vue from 'vue'
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
   import shopcart from '../shopcart/shopcart.vue'
+  import food from '../food/food.vue'
 
   import BScroll from 'better-scroll'
   export default {
@@ -61,6 +64,7 @@
         goods: [],
         scrollY: 0,
         tops: [],
+        selectedFood: {}
       }
     },
 
@@ -155,6 +159,13 @@
         foodList.forEach(food => {
           food.count = 0
         })
+      },
+
+      showFood(food) {
+        // 指定选中的food
+        this.selectedFood = food
+        // 显示food组件: 找到组件对象调用它的方法
+        this.$refs.food.showOrHide(true)
       }
     },
 
@@ -184,7 +195,8 @@
 
     components: {
       cartcontrol,
-      shopcart
+      shopcart,
+      food
     }
   }
 </script>
