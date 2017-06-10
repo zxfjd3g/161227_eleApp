@@ -40,20 +40,25 @@
         </li>
       </ul>
     </div>
+
+    <shopcart :food-list="foodList" :min-price="seller.minPrice"
+              :delivery-price="seller.deliveryPrice" :update-food-count="updateFoodCount"></shopcart>
   </div>
 </template>
 
 <script>
   import Vue from 'vue'
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
+  import shopcart from '../shopcart/shopcart.vue'
 
   import BScroll from 'better-scroll'
   export default {
+    props: ['seller'],
     data () {
       return {
         goods: [],
         scrollY: 0,
-        tops: []
+        tops: [],
       }
     },
 
@@ -154,11 +159,24 @@
         return this.tops.findIndex((top, index) => {
           return this.scrollY>=top && this.scrollY<this.tops[index+1]  // 如果返回true, 结果就为对应的index
         })
+      },
+
+      foodList () { // 找出所有count>0的food
+        const foods = []
+        this.goods.forEach(good => {
+          good.foods.forEach(food => {
+            if(food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
 
     components: {
-      cartcontrol
+      cartcontrol,
+      shopcart
     }
   }
 </script>
