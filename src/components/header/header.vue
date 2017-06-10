@@ -60,7 +60,6 @@
         <span class="icon-close"></span>
       </div>
     </div>
-
   </div>
 </template>
 
