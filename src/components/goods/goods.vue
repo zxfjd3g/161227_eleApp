@@ -42,7 +42,9 @@
     </div>
 
     <shopcart :food-list="foodList" :min-price="seller.minPrice"
-              :delivery-price="seller.deliveryPrice" :update-food-count="updateFoodCount"></shopcart>
+              :delivery-price="seller.deliveryPrice"
+              :update-food-count="updateFoodCount"
+              @clear="clearCart"></shopcart>
   </div>
 </template>
 
@@ -147,6 +149,12 @@
             food.count--
           }
         }
+      },
+
+      clearCart (foodList) { // 让购物车中所有food的count指定为0
+        foodList.forEach(food => {
+          food.count = 0
+        })
       }
     },
 
