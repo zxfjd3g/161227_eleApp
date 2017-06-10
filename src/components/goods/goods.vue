@@ -32,7 +32,7 @@
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  cartcontrol组件
+                  <cartcontrol :food="food" :update-food-count="updateFoodCount"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -44,6 +44,9 @@
 </template>
 
 <script>
+  import Vue from 'vue'
+  import cartcontrol from '../cartcontrol/cartcontrol.vue'
+
   import BScroll from 'better-scroll'
   export default {
     data () {
@@ -85,7 +88,8 @@
         })
         // 右侧goods列表的scroll
         this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
-          probeType: 3  //让scroll事件回调函数执行
+          probeType: 3,  //让scroll事件回调函数执行
+          click: true //是否派发click事件
         })
 
         // 监视foodsScroll的滚动
@@ -119,6 +123,25 @@
         var li = lis[index]
         // 滚动到li
         this.foodsScroll.scrollToElement(li, 300)
+      },
+
+      updateFoodCount (food, isAdd, event) {
+        // 过滤系统的点击回调
+        if(!event._constructed) {
+          return
+        }
+        if(isAdd) { // 加
+          if(!food.count) { // 第一次
+            // food.count = 1  // 新增的属性没有监视
+            Vue.set(food, 'count', 1) // 有监视
+          } else {
+            food.count++
+          }
+        } else { // 减
+          if(food.count) {
+            food.count--
+          }
+        }
       }
     },
 
@@ -132,6 +155,10 @@
           return this.scrollY>=top && this.scrollY<this.tops[index+1]  // 如果返回true, 结果就为对应的index
         })
       }
+    },
+
+    components: {
+      cartcontrol
     }
   }
 </script>
