@@ -22,7 +22,7 @@
         <div class="cartcontrol-wrapper">
           <cartcontrol :food="food" :update-food-count="updateFoodCount"></cartcontrol>
         </div>
-        <div class="buy" transition="fade" v-show="!food.count"
+        <div class="buy" v-if="!food.count"
              @click="updateFoodCount(food, true, $event)">加入购物车</div>
       </div>
 
@@ -37,11 +37,17 @@
 
       <div class="rating">
         <h1 class="title">商品评价</h1>
-        <div>ratingselect组件</div>
+        <ratingselect :desc="desc"
+                      :only-content="onlyContent"
+                      :ratings="food.ratings"
+                      :select-type="selectType"
+                      @switchonlycontent="switchOnlyContent"
+                      @setselecttype="setSelectType"
+                      v-if="food.ratings"></ratingselect>
 
         <div class="rating-wrapper">
           <ul>
-            <li class="rating-item border-1px" v-for="rating in food.ratings">
+            <li class="rating-item border-1px" v-for="rating in filterRatings">
               <div class="user">
                 <span class="name">{{rating.username}}</span>
                 <img class="avatar" width="12" height="12"
@@ -64,6 +70,9 @@
   import BScroll from 'better-scroll'
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
   import split from '../split/split.vue'
+  import ratingselect from '../ratingselect/ratingselect.vue'
+
+  const ALL = 2 // 全部
 
   export default {
     props: {
@@ -73,7 +82,17 @@
 
     data () {
       return {
-        isShow: false
+        isShow: false,
+        onlyContent: false,
+        selectType: ALL
+      }
+    },
+
+    created () {
+      this.desc = {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐糟'
       }
     },
 
@@ -92,12 +111,56 @@
             }
           })
         }
+      },
+
+      // 切换onlyContent
+      switchOnlyContent () {
+        this.onlyContent = !this.onlyContent
+        // 刷新列表
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
+      },
+      // 更新selectType
+      setSelectType (selectType) {
+        this.selectType = selectType
+        // 刷新列表
+        this.$nextTick(() => {
+          this.scroll.refresh()
+        })
+      }
+    },
+
+    computed: {
+      filterRatings () {
+        // 如果还没有数据, 结束
+        if(!this.food.ratings) {
+          return []
+        }
+
+        const ratings = this.food.ratings
+        const selectType = this.selectType
+        const onlyContent = this.onlyContent
+        return ratings.filter(rating => {
+          var {rateType, text} = rating // 解构赋值
+          if(selectType===2) {
+            /*if(!onlyContent) {
+              return true
+            } else {
+              return text.length>0
+            }*/
+            return !onlyContent || text.length>0
+          } else {
+            return selectType===rateType && (!onlyContent || text.length>0)
+          }
+        })
       }
     },
 
     components: {
       cartcontrol,
-      split
+      split,
+      ratingselect
     }
   }
 </script>
