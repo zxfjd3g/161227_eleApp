@@ -29,9 +29,9 @@
             </div>
           </li>
         </ul>
-        <div class="favorite">
+        <div class="favorite" @click="toggle">
           <span class="icon-favorite" :class="{active: favorite}"></span>
-          <span class="text">已收藏</span>
+          <span class="text">{{favorite ? '已收藏' : '收藏'}}</span>
         </div>
       </div>
 
@@ -115,6 +115,17 @@
           })
         }
       })
+    },
+
+    methods: {
+      toggle (event) {
+        if(!event._constructed) {
+          return
+        }
+        this.favorite = !this.favorite
+        //保存
+        window.localStorage.favorite = this.favorite
+      }
     },
 
     components: {
