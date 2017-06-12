@@ -34,6 +34,7 @@
                     :select-type="selectType"
                     @switchonlycontent="switchOnlyContent"
                     @setselecttype="setSelectType"></ratingselect>
+
       <div class="rating-wrapper">
         <ul>
           <li class="rating-item" v-for="rating in ratings" v-show="needShow(rating)">
@@ -85,6 +86,7 @@
     },
 
     created () {
+      console.log('ratings created()')
       this.desc = {
         all: '全部',
         positive: '满意',
@@ -97,12 +99,15 @@
           const result = response.body
           if(result.code===0) {
             this.ratings = result.data
-
             // 创建Scroll对象
             this.$nextTick(() => {
-              this.scroll = new BScroll(this.$els.ratings, {
-                click: true
-              })
+              console.log('xxxx', this.$els.ratings)
+              if(this.$els.ratings) {
+                this.scroll = new BScroll(this.$els.ratings, {
+                  click: true
+                })
+              }
+
             })
           }
         })
@@ -127,6 +132,7 @@
       },
 
       needShow (rating) {
+        console.log('needShow()')
         const {rateType, text} = rating
         const selectType = this.selectType
         const onlyContent = this.onlyContent
