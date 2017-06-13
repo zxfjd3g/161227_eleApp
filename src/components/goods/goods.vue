@@ -44,7 +44,8 @@
     <shopcart :food-list="foodList" :min-price="seller.minPrice"
               :delivery-price="seller.deliveryPrice"
               :update-food-count="updateFoodCount"
-              @clear="clearCart"></shopcart>
+              @clear="clearCart"
+              v-ref:shopcart></shopcart>
   </div>
 
   <food :food="selectedFood" :update-food-count="updateFoodCount" v-ref:food></food>
@@ -153,6 +154,9 @@
             food.count--
           }
         }
+
+        //启动一个小球动画(调用shopcart组件对象)
+        this.$refs.shopcart.drop(event.target)
       },
 
       clearCart (foodList) { // 让购物车中所有food的count指定为0

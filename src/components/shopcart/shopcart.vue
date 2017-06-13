@@ -21,7 +21,11 @@
         </div>
       </div>
     </div>
-    <div class="ball-container"></div>
+    <div class="ball-container">
+      <div class="ball" transition="drop" v-for="ball in balls" v-show="ball.isShow">
+        <div class="inner inner-hook"></div>
+      </div>
+    </div>
 
     <div class="shopcart-list" transition="fold" v-show="listShow">
       <div class="list-header">
@@ -61,7 +65,15 @@
 
     data () {
       return {
-        isShow: false
+        isShow: false,
+        balls: [
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false}
+        ],
+        droppingBalls: [] // 保存多个待执行动画的ball
       }
     },
 
@@ -132,6 +144,76 @@
       pay () {
         if(this.totalPrice-this.minPrice>=0) {
           alert(`支付${this.totalPrice+this.deliveryPrice}`)
+        }
+      },
+
+      //启动一个小球动画
+      drop(startEl) {
+        // 找到一个隐藏的小球元素, 让它显示出来, 并动画
+        // 从balls中找出isshow为falSE的ball
+        const ball = this.balls.find(ball =>!ball.isShow)
+        // 只有找到, 才做动画
+        if(ball) {
+          ball.isShow = true
+          ball.startEl = startEl // 保存对应的起始位置的元素
+          this.droppingBalls.push(ball) // 把启动动画的ball保存起来
+        }
+
+      }
+    },
+
+    transitions: {
+      drop: {
+        // 动画开始之前: 将小球瞬间移动到动画的起始位置(点击位置)
+        beforeEnter(el) {
+
+          var offsetX = 0
+          var offsetY = 0
+
+         // 取出第一个待启动动画的ball
+          const ball = this.droppingBalls.shift()
+          // 找到点击的startEl
+          var startEl = ball.startEl
+          // 得到起始位置的坐标
+          const {left, top} = startEl.getBoundingClientRect()
+          // 得劲原始位置的坐标
+          const elLeft = 32
+          const elBottom = 22
+          // 算出偏移量
+          offsetX = left-elLeft
+          offsetY = -(window.innerHeight-top-elBottom)
+
+          // 瞬间移动动画起始的位置
+          el.style.transform = `translate3d(0, ${offsetY}px, 0)`
+          el.style.webkitTransform = `translate3d(0, ${offsetY}px, 0)`
+          const innerEl = el.children[0]
+          innerEl.style.transform = `translate3d(${offsetX}px, 0, 0)`
+          innerEl.style.webkitTransform = `translate3d(${offsetX}px, 0, 0)`
+
+          // 保存ball
+          el.ball = ball
+        },
+
+        // 动画开始时: 指定动画结束的位置
+        enter(el) {
+          this.$nextTick(() => {
+            el.style.transform = `translate3d(0, 0, 0)`
+            el.style.webkitTransform = `translate3d(0, 0, 0)`
+            const innerEl = el.children[0]
+            innerEl.style.transform = `translate3d(0, 0, 0)`
+            innerEl.style.webkitTransform = `translate3d(0, 0, 0)`
+          })
+        },
+
+        // 动画完成之后: 做一些收尾的工作
+        // 问题: 在动画生命周期回调函数中更新状态, 页面不变化
+        afterEnter(el) {
+          // 找到对应的ball
+          const ball = el.ball
+          ball.isShow = false
+          ball.startEl = null
+          //el不会主动消失, 通过原生dom让el消失
+          el.style.display = 'none'
         }
       }
     },
