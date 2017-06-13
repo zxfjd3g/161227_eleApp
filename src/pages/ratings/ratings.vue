@@ -28,12 +28,7 @@
 
       <split></split>
 
-      <ratingselect :desc="desc"
-                    :only-content="onlyContent"
-                    :ratings="ratings"
-                    :select-type="selectType"
-                    @switchonlycontent="switchOnlyContent"
-                    @setselecttype="setSelectType"></ratingselect>
+      <ratingselect :desc="desc" :ratings="ratings"></ratingselect>
 
       <div class="rating-wrapper">
         <ul>
@@ -65,24 +60,18 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
   import moment from 'moment'
   import BScroll from 'better-scroll'
-  import star from '../star/star.vue'
-  import split from '../split/split.vue'
-  import ratingselect from '../ratingselect/ratingselect.vue'
+  import star from '../../components/common/star/star.vue'
+  import split from '../../components/common/split/split.vue'
+  import ratingselect from '../../components/common/ratingselect/ratingselect.vue'
 
   const ALL = 2
 
   export default {
     props: {
       seller: Object
-    },
-    data () {
-      return {
-        ratings: [],
-        onlyContent: true,
-        selectType: ALL
-      }
     },
 
     created () {
@@ -94,29 +83,24 @@
       }
 
       // ajax获取ratings数据
-      this.$http.get('/api2/ratings')
-        .then(response => {
-          const result = response.body
-          if(result.code===0) {
-            this.ratings = result.data
-            // 创建Scroll对象
-            this.$nextTick(() => {
-              console.log('xxxx', this.$refs.ratings)
-              if(this.$refs.ratings) {
-                this.scroll = new BScroll(this.$refs.ratings, {
-                  click: true
-                })
-              }
-
+      this.$store.dispatch('getRatings', () => {
+        // 创建Scroll对象
+        this.$nextTick(() => {
+          if(this.$refs.ratings) {
+            this.scroll = new BScroll(this.$refs.ratings, {
+              click: true
             })
           }
         })
+      })
+
+
     },
 
     methods: {
       // 切换onlyContent
       switchOnlyContent () {
-        this.onlyContent = !this.onlyContent
+        this.$store.dispatch('switchOnlyContent')
         // 刷新列表
         this.$nextTick(() => {
           this.scroll.refresh()
@@ -124,7 +108,7 @@
       },
       // 更新selectType
       setSelectType (selectType) {
-        this.selectType = selectType
+        this.$store.dispatch('setSelectType', selectType)
         // 刷新列表
         this.$nextTick(() => {
           this.scroll.refresh()
@@ -143,6 +127,9 @@
         }
       }
     },
+
+    computed: mapGetters(['ratings', 'selectType', 'onlyContent']),
+
     filters: {
       dateString (value) { // 1999-08-08 09:09:08
         return moment(value).format('YYYY-MM-DD HH:mm:ss')

@@ -54,8 +54,9 @@
 
 <script>
   import Vue from 'vue'
-  import cartcontrol from '../cartcontrol/cartcontrol.vue'
-  import shopcart from '../shopcart/shopcart.vue'
+  import {mapActions, mapGetters} from 'vuex'
+  import cartcontrol from '../../components/common/cartcontrol/cartcontrol.vue'
+  import shopcart from '../../components/shopcart/shopcart.vue'
   import food from '../food/food.vue'
 
   import BScroll from 'better-scroll'
@@ -63,7 +64,6 @@
     props: ['seller'],
     data () {
       return {
-        goods: [],
         scrollY: 0,
         tops: [],
         selectedFood: {}
@@ -72,27 +72,17 @@
 
     created () {
       this.classMap = ["decrease", "discount", "guarantee", "invoice", "special"]
-      // 发ajax请求, 得到goods数据
-      this.$http.get('/api2/goods')
-        .then(response => {
-          var result = response.body
-          if(result.code===0) {
-            this.goods = result.data
-
-            // 将回调延迟到下次 DOM 更新循环之后执行
-            this.$nextTick(() => {
-              this._initScroll()
-              this._initTops()
-            })
-
-            /*setTimeout(() => {
-              this._initScroll()
-            }, 200)*/
-          }
+      this.$store.dispatch('getGoods', () => {
+        // 将回调延迟到下次 DOM 更新循环之后执行
+        this.$nextTick(() => {
+          this._initScroll()
+          this._initTops()
         })
+      })
     },
 
     methods: {
+      ...mapActions(['clearCart']),
       // 初始化创建Scroller对象, 形成滚动条
       _initScroll () {
         // 左侧菜单的scroll
@@ -108,7 +98,7 @@
         // 监视foodsScroll的滚动
         this.foodsScroll.on('scroll', pos => {
           // console.log(pos.y)
-          this.scrollY = -pos.y
+          this.scrollY = Math.abs(pos.y)
         })
       },
 
@@ -143,60 +133,29 @@
         if(!event._constructed) {
           return
         }
-        if(isAdd) { // 加
-          if(!food.count) { // 第一次
-            // food.count = 1  // 新增的属性没有监视
-            Vue.set(food, 'count', 1) // 有监视
-          } else {
-            food.count++
-          }
+        this.$store.dispatch('updateFoodCount', {food, isAdd})
+        if(isAdd) {
           //启动一个小球动画(调用shopcart组件对象)
           this.$refs.shopcart.drop(event.target)
-        } else { // 减
-          if(food.count) {
-            food.count--
-          }
         }
-
-
-      },
-
-      clearCart (foodList) { // 让购物车中所有food的count指定为0
-        foodList.forEach(food => {
-          food.count = 0
-        })
       },
 
       showFood(food) {
         // 指定选中的food
-        this.selectedFood = food
+        this.$store.dispatch('setFood', food)
         // 显示food组件: 找到组件对象调用它的方法
         this.$refs.food.showOrHide(true)
       }
     },
 
     computed: {
+      ...mapGetters(['goods', 'foodList']),
+
       currentIndex () { // 计算当前分类的下标
-        /*
-        this.scrollY
-        this.tops
-         */
         return this.tops.findIndex((top, index) => {
           return this.scrollY>=top && this.scrollY<this.tops[index+1]  // 如果返回true, 结果就为对应的index
         })
       },
-
-      foodList () { // 找出所有count>0的food
-        const foods = []
-        this.goods.forEach(good => {
-          good.foods.forEach(food => {
-            if(food.count) {
-              foods.push(food)
-            }
-          })
-        })
-        return foods
-      }
     },
 
     components: {

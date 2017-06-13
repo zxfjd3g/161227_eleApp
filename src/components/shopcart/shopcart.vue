@@ -27,7 +27,8 @@
                     @enter="dropping"
                     @after-enter="afterDrop"
                     v-bind:css="false"
-                    v-for="ball in balls">
+                    v-for="(ball,index) in balls"
+                    :key="index">
           <div class="ball"  v-show="ball.isShow">
             <div class="inner inner-hook"></div>
           </div>
@@ -67,7 +68,7 @@
 
 <script>
   import BScroll from 'better-scroll'
-  import cartcontrol from '../cartcontrol/cartcontrol.vue'
+  import cartcontrol from '../common/cartcontrol/cartcontrol.vue'
 
   export default {
     props: {

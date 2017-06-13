@@ -21,31 +21,14 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
   export default {
     props: {
       desc: Object,
-      onlyContent: Boolean,
-      ratings: Array,
-      selectType: Number
+      ratings: Array
     },
 
-    computed: {
-      positiveLength () {
-        /*
-        var total = 0
-        this.ratings.forEach(rating => {
-          total += rating.rateType===0 ? 1 : 0
-        })*/
-
-
-        // 办法一: 过滤得到数组, 取出数组的length
-        // return this.ratings.filter(rating => rating.rateType===0).length
-        // 方法二: 使用reduce进行统计
-        return this.ratings.reduce((preTotal, rating) => {
-          return preTotal + (rating.rateType===0 ? 1 : 0)
-        }, 0)
-      }
-    },
+    computed: mapGetters(['selectType', 'onlyContent', 'positiveLength']),
 
     methods: {
       setSelectType (type, event) {
@@ -53,7 +36,7 @@
           return
         }
         // 触发事件
-        this.$emit('setselecttype', type)
+        this.$store.dispatch('setSelectType', type)
       },
 
       switchOnlyContent (event) {
@@ -61,14 +44,14 @@
           return
         }
         // 触发事件
-        this.$emit('switchonlycontent')
+        this.$store.dispatch('switchOnlyContent')
       }
     }
   }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "../../common/stylus/mixins.styl"
+  @import "../../../common/stylus/mixins.styl"
 
   .ratingselect
     .rating-type

@@ -77,8 +77,8 @@
 
 <script>
   import BScroll from 'better-scroll'
-  import star from '../star/star.vue'
-  import split from '../split/split.vue'
+  import star from '../../components/common/star/star.vue'
+  import split from '../../components/common/split/split.vue'
 
   export default {
     props: ['seller'],

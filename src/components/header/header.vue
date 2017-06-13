@@ -67,7 +67,7 @@
 </template>
 
 <script>
-  import star from '../star/star.vue'
+  import star from '../common/star/star.vue'
 
   export default {
     props: ['seller'],

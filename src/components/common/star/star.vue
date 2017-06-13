@@ -43,7 +43,7 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "../../common/stylus/mixins.styl"
+  @import "../../../common/stylus/mixins.styl"
   .star_36
     display inline-block
     width 15px

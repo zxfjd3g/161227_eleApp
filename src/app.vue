@@ -19,32 +19,14 @@
 </template>
 
 <script>
+  import {mapActions, mapGetters} from 'vuex'
   import header from './components/header/header.vue'
 
   export default {
-
-    data () {
-      return {
-        seller: {}
-      }
-    },
+    computed: mapGetters(['seller']),
 
     created () {
-      //发送ajax请求(mockjs提供的接口)
-      this.$http.get('/api2/seller')
-        .then(response => {
-          console.log(response.body)
-          const result = response.body
-          if(result.code===0) {
-            this.seller = result.data
-            this.seller.score = 3.6
-          }
-        })
-      //发送ajax请求(express提供的接口)
-      /*this.$http.get('/api/seller')
-        .then(response => {
-          console.log(response.body)
-        })*/
+      this.$store.dispatch('getSeller')
     },
 
     components: {

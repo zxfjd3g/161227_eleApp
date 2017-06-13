@@ -38,13 +38,7 @@
 
         <div class="rating">
           <h1 class="title">商品评价</h1>
-          <ratingselect :desc="desc"
-                        :only-content="onlyContent"
-                        :ratings="food.ratings"
-                        :select-type="selectType"
-                        @switchonlycontent="switchOnlyContent"
-                        @setselecttype="setSelectType"
-                        v-if="food.ratings"></ratingselect>
+          <ratingselect :desc="desc" :ratings="food.ratings" v-if="food.ratings"></ratingselect>
 
           <div class="rating-wrapper">
             <ul>
@@ -69,24 +63,22 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
   import BScroll from 'better-scroll'
-  import cartcontrol from '../cartcontrol/cartcontrol.vue'
-  import split from '../split/split.vue'
-  import ratingselect from '../ratingselect/ratingselect.vue'
+  import cartcontrol from '../../components/common/cartcontrol/cartcontrol.vue'
+  import split from '../../components/common/split/split.vue'
+  import ratingselect from '../../components/common/ratingselect/ratingselect.vue'
 
   const ALL = 2 // 全部
 
   export default {
     props: {
-      food: Object,
       updateFoodCount: Function
     },
 
     data () {
       return {
         isShow: false,
-        onlyContent: false,
-        selectType: ALL
       }
     },
 
@@ -99,6 +91,7 @@
     },
 
     methods: {
+      // 显示或隐藏
       showOrHide(isShow) { // 显示/隐藏当前food
         this.isShow = isShow
 
@@ -114,10 +107,9 @@
           })
         }
       },
-
       // 切换onlyContent
       switchOnlyContent () {
-        this.onlyContent = !this.onlyContent
+        this.$store.dispatch('switchOnlyContent')
         // 刷新列表
         this.$nextTick(() => {
           this.scroll.refresh()
@@ -125,7 +117,7 @@
       },
       // 更新selectType
       setSelectType (selectType) {
-        this.selectType = selectType
+        this.$store.dispatch('setSelectType', selectType)
         // 刷新列表
         this.$nextTick(() => {
           this.scroll.refresh()
@@ -133,31 +125,7 @@
       }
     },
 
-    computed: {
-      filterRatings () {
-        // 如果还没有数据, 结束
-        if(!this.food.ratings) {
-          return []
-        }
-
-        const ratings = this.food.ratings
-        const selectType = this.selectType
-        const onlyContent = this.onlyContent
-        return ratings.filter(rating => {
-          var {rateType, text} = rating // 解构赋值
-          if(selectType===2) {
-            /*if(!onlyContent) {
-              return true
-            } else {
-              return text.length>0
-            }*/
-            return !onlyContent || text.length>0
-          } else {
-            return selectType===rateType && (!onlyContent || text.length>0)
-          }
-        })
-      }
-    },
+    computed: mapGetters(['filterRatings', 'food', 'selectType', 'onlyContent']),
 
     components: {
       cartcontrol,
