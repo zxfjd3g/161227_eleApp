@@ -1,8 +1,8 @@
 <template>
   <div class="cartcontrol">
-    <div class="cart-decrease" transition="move" v-show="food.count"
-         @click.stop="updateFoodCount(food, false, $event)">
-      <span class="inner icon-remove_circle_outline"></span>
+    <div class="cart-decrease icon-remove_circle_outline" v-show="food.count"
+         @click.stop="updateFoodCount(food, false, $event)" transition="move">
+      <!--<span class="inner icon-remove_circle_outline"></span>-->
     </div>
     <div class="cart-count" v-show="food.count">{{food.count}}</div>
     <div class="cart-add icon-add_circle" @click.stop="updateFoodCount(food, true, $event)"></div>
@@ -24,22 +24,16 @@
     .cart-decrease
       display: inline-block
       padding: 6px
-      transition: all 0.4s linear
+      line-height: 24px
+      font-size: 24px
+      color: rgb(0, 160, 220)
       &.move-transition
+        transition: all .4s linear
         opacity: 1
-        transform: translate3d(0, 0, 0)
-        .inner
-          display: inline-block
-          line-height: 24px
-          font-size: 24px
-          color: rgb(0, 160, 220)
-          transition: all 0.4s linear
-          transform: rotate(0)
+        transform: translate3d(0, 0, 0) rotate(0)
       &.move-enter, &.move-leave
         opacity: 0
-        transform: translate3d(24px, 0, 0)
-        .inner
-          transform: rotate(180deg)
+        transform: translate3d(24px, 0, 0) rotate(180deg)
     .cart-count
       display: inline-block
       vertical-align: top

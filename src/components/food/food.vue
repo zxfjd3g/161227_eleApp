@@ -1,5 +1,5 @@
 <template>
-  <div class="food" transition="move" v-show="isShow" v-el:food>
+  <div class="food" v-show="isShow" v-el:food transition="move">
     <div class="food-content">
 
       <div class="image-header">
@@ -176,11 +176,13 @@
     z-index: 30
     width: 100%
     background: #fff
+
     &.move-transition
-      transition: all 0.2s linear
+      transition: transform .2s linear
       transform: translate3d(0, 0, 0)
     &.move-enter, &.move-leave
       transform: translate3d(100%, 0, 0)
+
     .image-header
       position: relative
       width: 100%

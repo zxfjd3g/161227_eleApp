@@ -28,7 +28,7 @@
     <div class="background">
       <img :src="seller.avatar">
     </div>
-    <div class="detail" v-show="detailShow">
+    <div class="detail" v-show="detailShow" transition="fade">
       <div class="detail-wrapper">
         <div class="detail-main">
           <div class="name">{{seller.name}}</div>
@@ -225,6 +225,11 @@
       bottom 0
       background: rgba(7,17,27,0.8);
       z-index 100
+      &.fade-transition
+        transition: opacity .5s ease
+        opacity: 1
+      &.fade-enter, &.fade-leave
+        opacity: 0
       .detail-wrapper
         min-height 100%
         .detail-main
